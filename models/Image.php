@@ -60,17 +60,18 @@ class Image extends \yii\db\ActiveRecord
         return $url;
     }
 
-    public function getPath($size = false){
+    public function getPath($size = false, $watermark = true){
         $urlSize = ($size) ? '_'.$size : '';
         $base = $this->getModule()->getCachePath();
         $sub = $this->getSubDur();
+        $watermark = $this->getModule()->waterMark ? $watermark : false;
 
         $origin = $this->getPathToOrigin();
 
         $filePath = $base.DIRECTORY_SEPARATOR.
             $sub.DIRECTORY_SEPARATOR.$this->urlAlias.$urlSize.'.'.pathinfo($origin, PATHINFO_EXTENSION);;
         if(!file_exists($filePath)){
-            $this->createVersion($origin, $size);
+            $this->createVersion($origin, $size, $watermark);
 
             if(!file_exists($filePath)){
                 throw new \Exception('Problem with image creating.');
@@ -136,7 +137,7 @@ class Image extends \yii\db\ActiveRecord
         return $newSizes;
     }
 
-    public function createVersion($imagePath, $sizeString = false)
+    public function createVersion($imagePath, $sizeString = false, $watermark = false)
 {
     if (strlen($this->urlAlias) < 1) {
         throw new \Exception('Image without urlAlias!');
@@ -180,7 +181,7 @@ class Image extends \yii\db\ActiveRecord
         }
 
         // WaterMark
-        if ($this->getModule()->waterMark) {
+        if ($this->getModule()->waterMark && $watermark) {
             if (!file_exists(Yii::getAlias($this->getModule()->waterMark))) {
                 throw new Exception('WaterMark not detected!');
             }
@@ -227,7 +228,7 @@ class Image extends \yii\db\ActiveRecord
         }
 
         // WaterMark
-        if ($this->getModule()->waterMark) {
+        if ($this->getModule()->waterMark && $watermark) {
             if (!file_exists(Yii::getAlias($this->getModule()->waterMark))) {
                 throw new Exception('WaterMark not detected!');
             }
