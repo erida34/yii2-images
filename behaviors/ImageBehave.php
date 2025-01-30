@@ -329,16 +329,16 @@ class ImageBehave extends Behavior
 
     public function uploadImgFromAttribute($attribute, $width = 1920, $height = 1080)
     {
-        if ($this->validate()) {
+        if ($this->owner->validate()) {
 
-            if (!empty($this->getImageByName($attribute)->itemId)) {
-                $this->removeImage($this->getImageByName($attribute));
+            if (!empty($this->owner->getImageByName($attribute)->itemId)) {
+                $this->owner->removeImage($this->owner->getImageByName($attribute));
             }
 
-            $path = $this->origPath . $this->{$attribute}->baseName . "." . $this->{$attribute}->extension;
-            \yii\imagine\Image::resize($this->{$attribute}->tempName, $width, $height, true, false)->save($path);
-            $this->attachImage($path, true, $attribute);
-            $this->{$attribute} = '';
+            $path = $this->origPath . $this->owner->{$attribute}->baseName . "." . $this->owner->{$attribute}->extension;
+            \yii\imagine\Image::resize($this->owner->{$attribute}->tempName, $width, $height, true, false)->save($path);
+            $this->owner->attachImage($path, true, $attribute);
+            $this->owner->{$attribute} = '';
             @unlink($path);
             return true;
         } else {
