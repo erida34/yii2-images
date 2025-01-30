@@ -239,6 +239,29 @@ class ImageBehave extends Behavior
     }
 
     /**
+     * returns models images by name
+     * @return array|null|ActiveRecord[]
+     */
+    public function getImagesByName($name)
+    {
+        if ($this->getModule()->className === null) {
+            $imageQuery = Image::find();
+        } else {
+            $class = $this->getModule()->className;
+            $imageQuery = $class::find();
+        }
+        $finder = $this->getImagesFinder(['name' => $name]);
+        $imageQuery->where($finder);
+        $imageQuery->orderBy(['isMain' => SORT_DESC, 'id' => SORT_ASC]);
+
+        $imageRecords = $imageQuery->all();
+        if(!$imageRecords && $this->getModule()->placeHolderPath){
+            return [$this->getModule()->getPlaceHolder()];
+        }
+        return $imageRecords;
+    }
+
+    /**
      * Remove all model images
      */
     public function removeImages()
