@@ -21,6 +21,7 @@ class ImageBehave extends Behavior
 {
     use ModuleTrait;
     public $createAliasMethod = false;
+    public $origPath = '';
 
     /**
      * @var ActiveRecord|null Model class, which will be used for storing image data in db, if not set default class(models/Image) will be used
@@ -324,5 +325,24 @@ class ImageBehave extends Behavior
         $imagesCount = count($this->owner->getImages());
 
         return $aliasWords . '-' . intval($imagesCount + 1);
+    }
+
+    public function uploadImgFromAttribute($attribute, $width = 1920, $height = 1080)
+    {
+        if ($this->validate()) {
+
+            if (!empty($this->getImageByName($attribute)->itemId)) {
+                $this->removeImage($this->getImageByName($attribute));
+            }
+
+            $path = $this->origPath . $this->{$attribute}->baseName . "." . $this->{$attribute}->extension;
+            \yii\imagine\Image::resize($this->{$attribute}->tempName, $width, $height, true, false)->save($path);
+            $this->attachImage($path, true, $attribute);
+            $this->{$attribute} = '';
+            @unlink($path);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
