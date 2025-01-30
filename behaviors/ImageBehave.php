@@ -327,14 +327,15 @@ class ImageBehave extends Behavior
         return $aliasWords . '-' . intval($imagesCount + 1);
     }
 
-    public function uploadImgFromAttribute($attribute, $width = 1920, $height = 1080)
+    public function uploadImgFromAttribute($attribute, $width = 1920, $height = 1080, $deleteOld = true)
     {
         if ($this->owner->validate()) {
-
-            if (!empty($this->owner->getImageByName($attribute)->itemId)) {
-                $this->owner->removeImage($this->owner->getImageByName($attribute));
+            if($deleteOld) {
+                if (!empty($this->owner->getImageByName($attribute)->itemId)) {
+                    $this->owner->removeImage($this->owner->getImageByName($attribute));
+                }    
             }
-
+            
             $path = $this->origPath . $this->owner->{$attribute}->baseName . "." . $this->owner->{$attribute}->extension;
             \yii\imagine\Image::resize($this->owner->{$attribute}->tempName, $width, $height, true, false)->save($path);
             $this->owner->attachImage($path, true, $attribute);
