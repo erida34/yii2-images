@@ -256,7 +256,7 @@ class ImageBehave extends Behavior
 
         $imageRecords = $imageQuery->all();
         if(!$imageRecords && $this->getModule()->placeHolderPath){
-            return [$this->getModule()->getPlaceHolder()];
+            return [];
         }
         return $imageRecords;
     }
