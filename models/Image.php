@@ -211,7 +211,7 @@ class Image extends \yii\db\ActiveRecord
             $image->compositeImage($waterMark, \Imagick::COMPOSITE_OVER, intval(($image->getImageWidth() - $waterMark->getImageWidth()) / 2), intval(($image->getImageHeight() - $waterMark->getImageHeight()) / 2));
         }
 
-        $image->writeImage($pathToSave);
+        $image->writeImage(Yii::getAlias('@webroot/' . $pathToSave));
     } else {
         $image = new \abeautifulsite\SimpleImage($imagePath);
 
