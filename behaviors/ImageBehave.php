@@ -354,7 +354,7 @@ class ImageBehave extends Behavior
     {
         $imgUploaded = \yii\web\UploadedFile::getInstance($this->owner, $attribute) ?: $this->owner->{$attribute};
         
-        if ($imgUploaded) {
+        if ($imgUploaded instanceof \yii\web\UploadedFile) {
             if ($this->owner->validate()) {
                 if($deleteOld) {
                     if (!empty($this->owner->getImageByName($attribute)->itemId)) {
