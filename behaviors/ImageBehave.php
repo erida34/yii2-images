@@ -242,7 +242,7 @@ class ImageBehave extends Behavior
      * returns models images by name
      * @return array|null|ActiveRecord[]
      */
-    public function getImagesByName($name)
+    public function getImagesByName($name, $placeholder = false)
     {
         if ($this->getModule()->className === null) {
             $imageQuery = Image::find();
@@ -256,6 +256,9 @@ class ImageBehave extends Behavior
 
         $imageRecords = $imageQuery->all();
         if(!$imageRecords && $this->getModule()->placeHolderPath){
+            if($placeholder) {
+                return [$this->getModule()->getPlaceHolder()];
+            }
             return [];
         }
         return $imageRecords;
