@@ -355,24 +355,45 @@ class ImageBehave extends Behavior
 
     public function uploadImgFromAttribute($attribute, $width = 1920, $height = 1080, $deleteOld = true)
     {
-        $imgUploaded = \yii\web\UploadedFile::getInstance($this->owner, $attribute) ?: $this->owner->{$attribute};
-        
-        if ($imgUploaded instanceof \yii\web\UploadedFile) {
-            if ($this->owner->validate()) {
-                if($deleteOld) {
-                    if (!empty($this->owner->getImageByName($attribute)->itemId)) {
-                        $this->owner->removeImage($this->owner->getImageByName($attribute));
-                    }    
+        if(is_array($this->owner->{$attribute})){
+            $imgsUploaded = \yii\web\UploadedFile::getInstances($this->owner, $attribute) ?: $this->owner->{$attribute};
+            foreach($imgsUploaded as $imgUploaded){
+                if ($imgUploaded instanceof \yii\web\UploadedFile) {
+                    if ($this->owner->validate()) {
+                        if($deleteOld) {
+                            if (!empty($this->owner->getImageByName($attribute)->itemId)) {
+                                $this->owner->removeImage($this->owner->getImageByName($attribute));
+                            }    
+                        }
+                        
+                        $path = $this->origPath . $imgUploaded->baseName . "." . $imgUploaded->extension;
+                        \yii\imagine\Image::resize($imgUploaded->tempName, $width, $height, true, false)->save($path);
+                        $this->owner->attachImage($path, true, $attribute);
+                        $imgUploaded = '';
+                        @unlink($path);
+                    }
                 }
-                
-                $path = $this->origPath . $imgUploaded->baseName . "." . $imgUploaded->extension;
-                \yii\imagine\Image::resize($imgUploaded->tempName, $width, $height, true, false)->save($path);
-                $this->owner->attachImage($path, true, $attribute);
-                $imgUploaded = '';
-                @unlink($path);
-                return true;
-            } else {
-                return false;
+            }
+        } else {
+            $imgUploaded = \yii\web\UploadedFile::getInstance($this->owner, $attribute) ?: $this->owner->{$attribute};
+            
+            if ($imgUploaded instanceof \yii\web\UploadedFile) {
+                if ($this->owner->validate()) {
+                    if($deleteOld) {
+                        if (!empty($this->owner->getImageByName($attribute)->itemId)) {
+                            $this->owner->removeImage($this->owner->getImageByName($attribute));
+                        }    
+                    }
+                    
+                    $path = $this->origPath . $imgUploaded->baseName . "." . $imgUploaded->extension;
+                    \yii\imagine\Image::resize($imgUploaded->tempName, $width, $height, true, false)->save($path);
+                    $this->owner->attachImage($path, true, $attribute);
+                    $imgUploaded = '';
+                    @unlink($path);
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }
     }
