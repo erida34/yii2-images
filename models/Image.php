@@ -206,6 +206,9 @@ class Image extends \yii\db\ActiveRecord
                         throw new Exception('Cant save watermark to ' . $waterMarkPath . '!!!');
                     }
                 }
+
+                // Use resized watermark image for composite on small previews.
+                $waterMark = new \Imagick($waterMarkPath);
             }
 
             $image->compositeImage($waterMark, \Imagick::COMPOSITE_OVER, intval(($image->getImageWidth() - $waterMark->getImageWidth()) / 2), intval(($image->getImageHeight() - $waterMark->getImageHeight()) / 2));
